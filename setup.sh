@@ -1,19 +1,13 @@
 #!/bin/bash
-sudo apt install openssh-server openssh-client net-tools
-ssh-keygen -t ecdsa -b 521 -C "koji.minoda@tier4.jp" -f ~/.ssh/id_rsa -N ""
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 
-if ! (command -v curl >/dev/null 2>&1); then
-    sudo apt -y update
-    sudo apt -y install curl
-fi
-if ! (command -v rye >/dev/null 2>&1); then
-    # https://rye-up.com/guide/installation/#customized-installation
-    curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash
-fi
-source $HOME/.rye/env
-if ! (command -v ansible-playbook >/dev/null 2>&1); then
-    rye install ansible-core
-    ansible-galaxy collection install community.general
-fi
+# Install ansible
+python3 -m pipx ensurepath
+export PATH="${PIPX_BIN_DIR:=$HOME/.local/bin}:$PATH"
+pipx install --include-deps --force "ansible==6.*"
 
-ansible-playbook ansible/ubuntu.yml --ask-become-pass -y
+# Install ansible collections
+echo -e "\e[36m"ansible-galaxy collection install -f -r "$SCRIPT_DIR/ansible-galaxy-requirements.yaml" "\e[m"
+ansible-galaxy collection install -f -r "$SCRIPT_DIR/ansible-galaxy-requirements.yaml"
+
+ansible-playbook ansible/ubuntu.yml --ask-become-pass

@@ -10,6 +10,7 @@
     - role: google_chrome
     - role: slack
     - role: code
+    - role: ibus-mozc
     - role: ghq
     - role: tmux
     - role: docker
