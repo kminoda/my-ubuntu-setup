@@ -1,0 +1,13 @@
+---
+- name: Install ibus-mozc
+  become: true
+  apt:
+    name: ibus-mozc
+    state: present
+
+- name: Install mozc-utils-gui
+  become: true
+  apt:
+    name: mozc-utils-gui
+    state: present
+

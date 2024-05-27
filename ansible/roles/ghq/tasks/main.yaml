@@ -1,0 +1,27 @@
+- name: Add Golang PPA
+  become: true
+  apt_repository:
+    repo: ppa:longsleep/golang-backports
+    state: present
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Install Golang
+  become: true
+  apt:
+    name: golang-go
+    state: present
+
+- name: Install ghq
+  shell: go install github.com/x-motemen/ghq@latest
+  environment:
+    GOPATH: /home/{{ ansible_user }}/go
+
+- name: Add Go bin directory to PATH
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: 'export PATH=$PATH:/home/{{ ansible_user }}/go/bin'
+    state: present

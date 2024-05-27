@@ -1,0 +1,50 @@
+---
+- name: Add fish-shell PPA
+  become: true
+  apt_repository:
+    repo: ppa:fish-shell/release-3
+    state: present
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Install fish
+  become: true
+  apt:
+    name: fish
+    state: present
+
+- name: Install fisher plugin manager
+  shell: curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+  args:
+    executable: fish
+
+- name: Install fish plugins
+  shell: fisher install oh-my-fish/theme-bobthefish oh-my-fish/plugin-pbcopy edc/bass jethrokuan/fzf decors/fish-ghq
+  args:
+    executable: fish
+
+- name: Add fish startup script to .bashrc
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: |
+      if [ -z "$FISH_VERSION" ]; then
+          command -v fish > /dev/null 2>&1 && exec fish
+      fi
+    state: present
+
+- name: Install argcomplete for fish
+  pip:
+    name: argcomplete
+    state: present
+    executable: pip3
+    extra_args: --user
+
+- name: Add argcomplete setup to fish config
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.config/fish/config.fish"
+    line: 'register-python-argcomplete --shell fish ros2 | source'
+    create: yes
+    state: present

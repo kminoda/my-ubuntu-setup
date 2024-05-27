@@ -1,0 +1,36 @@
+---
+- name: Install Git
+  become: true
+  apt:
+    name: git
+    state: present
+
+- name: Clone Autoware repository
+  git:
+    repo: https://github.com/autowarefoundation/autoware.git
+    dest: "{{ ansible_user_dir }}/autoware"
+    clone: yes
+    update: no
+
+- name: Execute setup-dev-env.sh
+  shell: ./setup-dev-env.sh -y -v 
+  args:
+    chdir: "{{ ansible_user_dir }}/autoware"
+
+- name: Make src dir
+  file:
+    path: "{{ ansible_user_dir }}/autoware/src"
+    state: directory
+
+- name: Import repositories with vcs
+  shell: vcs import src < autoware.repos
+  args:
+    chdir: "{{ ansible_user_dir }}/autoware"
+
+- name: Execute rosdep update
+  shell: rosdep update
+
+- name: Execute rosdep install
+  shell: rosdep install --from-paths src --ignore-src -r -y
+  args:
+    chdir: "{{ ansible_user_dir }}/autoware"

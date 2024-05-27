@@ -1,0 +1,42 @@
+---
+- name: Check if swap file exists
+  stat:
+    path: /swapfile
+  register: swapfile
+
+- name: Turn off all swap processes
+  become: true
+  command: swapoff -a
+  when: swapfile.stat.exists
+
+- name: Remove existing swap file
+  become: true
+  file:
+    path: /swapfile
+    state: absent
+  when: swapfile.stat.exists
+
+- name: Create a new swap file
+  become: true
+  command: fallocate -l 32G /swapfile
+
+- name: Set up the swap file
+  become: true
+  command: mkswap /swapfile
+
+- name: Enable the swap file
+  become: true
+  command: swapon /swapfile
+
+- name: Add swap file to /etc/fstab
+  become: true
+  lineinfile:
+    path: /etc/fstab
+    line: '/swapfile none swap sw 0 0'
+    state: present
+
+- name: Set swap file permissions
+  become: true
+  file:
+    path: /swapfile
+    mode: '0600'

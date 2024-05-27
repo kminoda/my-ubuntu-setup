@@ -1,0 +1,26 @@
+---
+- name: Download Google Chrome .deb package
+  become: true
+  get_url:
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    dest: /tmp/google-chrome-stable_current_amd64.deb
+
+- name: Install Google Chrome
+  become: true
+  apt:
+    deb: /tmp/google-chrome-stable_current_amd64.deb
+
+- name: Ensure Google Chrome dependencies are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - libappindicator1
+    - fonts-liberation
+
+- name: Clean up Google Chrome .deb package
+  become: true
+  file:
+    path: /tmp/google-chrome-stable_current_amd64.deb
+    state: absent

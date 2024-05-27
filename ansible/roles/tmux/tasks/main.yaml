@@ -1,0 +1,35 @@
+- name: Install tmux
+  become: true
+  apt:
+    name: tmux
+    state: present
+
+- name: Clone .tmux repository
+  shell: ghq get https://github.com/gpakosz/.tmux.git
+  environment:
+    PATH: "/home/{{ ansible_user }}/go/bin:{{ ansible_env.PATH }}"
+
+- name: Create symlink for .tmux.conf
+  file:
+    src: "{{ ansible_user_dir }}/ghq/github.com/gpakosz/.tmux/.tmux.conf"
+    dest: "{{ ansible_user_dir }}/.tmux.conf"
+    state: link
+
+- name: Copy .tmux.conf.local
+  copy:
+    src: "{{ ansible_user_dir }}/ghq/github.com/gpakosz/.tmux/.tmux.conf.local"
+    dest: "{{ ansible_user_dir }}/"
+
+- name: Add tmux auto-start script to .bashrc
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: |
+      # Start tmux session if not already running
+      if [[ ! -n $TMUX ]]; then
+          tmux new-session
+      fi
+
+      if [[ ! -n $TMUX ]]; then
+          tmux new-session && exit
+      fi
+    state: present
