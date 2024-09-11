@@ -1,0 +1,18 @@
+---
+- name: Download latest Cloudflared deb package
+  get_url:
+    url: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+    dest: /tmp/cloudflared-linux-amd64.deb
+    mode: '0644'
+
+- name: Install Cloudflared
+  apt:
+    deb: /tmp/cloudflared-linux-amd64.deb
+    state: present
+  become: yes
+  become_method: sudo
+
+- name: Clean up downloaded deb file
+  file:
+    path: /tmp/cloudflared-linux-amd64.deb
+    state: absent

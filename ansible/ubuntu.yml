@@ -16,4 +16,6 @@
     - role: docker
     - role: fish
     - role: fzf
-    - role: autoware
+    - role: caps_lock_to_ctrl
+    - role: cloudflared
+    # - role: autoware

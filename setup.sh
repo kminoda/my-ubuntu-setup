@@ -2,6 +2,7 @@
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 
 # Install ansible
+sudo apt install pipx
 python3 -m pipx ensurepath
 export PATH="${PIPX_BIN_DIR:=$HOME/.local/bin}:$PATH"
 pipx install --include-deps --force "ansible==6.*"

@@ -1,0 +1,28 @@
+---
+- name: Install gnome-tweaks
+  become: true
+  apt:
+    name: gnome-tweaks
+    state: present
+
+- name: Install psutil Python module
+  pip:
+    name: psutil
+  ignore_errors: yes
+
+- name: Change Caps Lock to Ctrl using dconf
+  dconf:
+    key: "/org/gnome/desktop/input-sources/xkb-options"
+    value: "['caps:ctrl_modifier']"
+    state: present
+  ignore_errors: yes
+
+- name: Change Caps Lock to Ctrl using gsettings (fallback)
+  command: gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier']"
+  when: ansible_distribution == 'Ubuntu'
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+
+# - name: Restart GNOME Shell
+#   command: killall -3 gnome-shell
+#   ignore_errors: yes
