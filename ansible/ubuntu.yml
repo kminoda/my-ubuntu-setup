@@ -18,4 +18,5 @@
     - role: fzf
     - role: caps_lock_to_ctrl
     - role: cloudflared
+    - role: zoom
     # - role: autoware

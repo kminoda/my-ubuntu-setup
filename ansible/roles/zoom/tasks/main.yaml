@@ -1,0 +1,18 @@
+---
+- name: Download Zoom deb package
+  get_url:
+    url: https://zoom.us/client/latest/zoom_amd64.deb
+    dest: /tmp/zoom_amd64.deb
+    mode: '0644'
+
+- name: Install Zoom
+  apt:
+    deb: /tmp/zoom_amd64.deb
+    state: present
+  become: yes
+  become_method: sudo
+
+- name: Clean up Zoom deb file
+  file:
+    path: /tmp/zoom_amd64.deb
+    state: absent
